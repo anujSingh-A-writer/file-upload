@@ -8,17 +8,19 @@ export async function GET() {
             scopes: ["https://www.googleapis.com/auth/drive.readonly"],
         });
 
-        // Use the GoogleAuth instance directly for the 'auth' property
         const drive = google.drive({ version: "v3", auth });
 
+        const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID!;
+        if (!folderId) throw new Error("GOOGLE_DRIVE_FOLDER_ID is not set");
+
         const response = await drive.files.list({
-            q: `'${process.env.GOOGLE_DRIVE_FOLDER_ID}' in parents and trashed = false`,
+            q: `'${folderId}' in parents and trashed = false`,
             fields: "files(id, name, webViewLink, mimeType, createdTime)",
         });
 
-        return NextResponse.json({ files: response?.data?.files });
+        return NextResponse.json({ files: response.data.files });
     } catch (err) {
-        console.error("Drive fetch error:", err);
+        console.error("Drive fetch error:", JSON.stringify(err, null, 2));
         return NextResponse.json({ error: "Failed to list files" }, { status: 500 });
     }
 }

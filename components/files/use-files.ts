@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 const useFiles = () => {
     const [files, setFiles] = useState<DriveFile[]>([]);
+    const [selectedFile, setSelectedFile] = useState<DriveFile | null>(null);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -24,13 +26,21 @@ const useFiles = () => {
         const { id, mimeType } = file;
 
         if (mimeType === "application/vnd.google-apps.document") {
+            setSelectedFile(file);
             return `https://docs.google.com/document/d/${id}/edit`;
+
         } else if (mimeType === "application/vnd.google-apps.spreadsheet") {
+            setSelectedFile(file);
             return `https://docs.google.com/spreadsheets/d/${id}/edit`;
+
         } else if (mimeType === "application/vnd.google-apps.presentation") {
+            setSelectedFile(file);
             return `https://docs.google.com/presentation/d/${id}/edit`;
+
         } else {
+            setSelectedFile(file);
             return file.webViewLink;
+
         }
     }
 
@@ -39,6 +49,8 @@ const useFiles = () => {
         files,
         loading,
         getEditLink,
+        selectedFile,
+        setSelectedFile,
     }
 }
 
